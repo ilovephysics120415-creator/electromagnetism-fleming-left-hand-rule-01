@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fleming's Left-Hand Rule | Interactive 3D Physics Lab</title>
+    <!-- Google Fonts for premium design -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for clean iconography -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- CSS stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Three.js and OrbitControls via CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+    <div id="app-container">
+        <!-- Floating Header -->
+        <header class="glass-panel">
+            <div class="logo">
+                <span class="pulse-dot"></span>
+                <h1>PHYSICS LAB <span class="syllabus">6091 SEC 4</span></h1>
+            </div>
+            <div class="title-container">
+                <h2>FLEMING'S LEFT-HAND RULE</h2>
+                <p>Master electromagnetism & force deflection in 3D</p>
+            </div>
+            <div class="quick-status">
+                <div class="status-item"><i class="fa-solid fa-magnet text-blue"></i> <span id="status-field">Right</span></div>
+                <div class="status-item"><i class="fa-solid fa-bolt text-yellow"></i> <span id="status-flow">Conventional</span></div>
+            </div>
+        </header>
+
+        <!-- Main 3D Viewport -->
+        <main id="canvas-container">
+            <div id="view-indicator" class="glass-panel">
+                <span><i class="fa-solid fa-arrows-to-eye"></i> 2D Worksheet View (Snap Active)</span>
+            </div>
+        </main>
+
+        <!-- Left Controls Sidebar -->
+        <aside id="controls-sidebar" class="glass-panel">
+            <h3><i class="fa-solid fa-sliders"></i> LAB CONTROLS</h3>
+            
+            <div class="control-group">
+                <label>Current Direction (I)</label>
+                <select id="select-current-dir" class="select-control">
+                    <option value="inwards">Into the Screen ⊗</option>
+                    <option value="outwards" selected>Out of the Screen ⊙</option>
+                    <option value="left">Left ←</option>
+                    <option value="right">Right →</option>
+                    <option value="up">Up ↑</option>
+                    <option value="down">Down ↓</option>
+                </select>
+                <p class="control-tip">Direction of conventional current in the wire</p>
+            </div>
+
+            <div class="control-group">
+                <label>Magnetic Field (B)</label>
+                <select id="select-field-dir" class="select-control">
+                    <option value="left" selected>Left ←</option>
+                    <option value="right">Right →</option>
+                    <option value="up">Up ↑</option>
+                    <option value="down">Down ↓</option>
+                    <option value="inwards">Into the Screen ⊗</option>
+                    <option value="outwards">Out of the Screen ⊙</option>
+                </select>
+                <p class="control-tip">Magnetic field direction (North to South)</p>
+            </div>
+
+            <div class="control-group">
+                <label>Current Flow Type</label>
+                <div class="toggle-switch">
+                    <input type="checkbox" id="toggle-flow-type">
+                    <label for="toggle-flow-type" class="switch-label">
+                        <span class="switch-text-left">Conventional</span>
+                        <span class="switch-text-right">Electron Flow</span>
+                    </label>
+                </div>
+                <p class="control-tip">Conventional current flows opposite to electrons</p>
+            </div>
+
+            <div class="control-group">
+                <label>Visual Aids</label>
+                <div class="checkbox-container">
+                    <input type="checkbox" id="show-field-lines" checked>
+                    <label for="show-field-lines">
+                        <span class="checkbox-box"><i class="fa-solid fa-check"></i></span>
+                        Show Field Lines (B)
+                    </label>
+                </div>
+                <div class="checkbox-container">
+                    <input type="checkbox" id="show-hand-model" checked>
+                    <label for="show-hand-model">
+                        <span class="checkbox-box"><i class="fa-solid fa-check"></i></span>
+                        Show 3D Left Hand
+                    </label>
+                </div>
+            </div>
+            
+            <button id="toggle-test-mode" class="btn btn-secondary" style="margin-bottom: 8px;"><i class="fa-solid fa-lock"></i> Test Mode: OFF</button>
+            <button id="reset-cam" class="btn btn-secondary"><i class="fa-solid fa-arrows-spin"></i> Reset Camera View</button>
+        </aside>
+
+        <!-- Right Explanation & Challenge Sidebar -->
+        <aside id="info-sidebar">
+            <!-- Fleming's Hand Cheat Sheet -->
+            <section class="glass-panel rule-helper">
+                <h3><i class="fa-solid fa-hand-lizard"></i> THE RULE CHEAT SHEET</h3>
+                <div class="finger-card thumb">
+                    <div class="finger-label">Thumb</div>
+                    <div class="finger-desc">
+                        <h4>Force / Thrust (F)</h4>
+                        <p>Direction of wire deflection/movement</p>
+                    </div>
+                </div>
+                <div class="finger-card index">
+                    <div class="finger-label">First Finger</div>
+                    <div class="finger-desc">
+                        <h4>Field (B)</h4>
+                        <p>Direction of magnetic field (North to South)</p>
+                    </div>
+                </div>
+                <div class="finger-card middle">
+                    <div class="finger-label">Se<u>c</u>ond Finger</div>
+                    <div class="finger-desc">
+                        <h4><u>C</u>urrent (I)</h4>
+                        <p>Conventional current (+ to -)</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quiz / Challenge Panel (Interactive and engaging) -->
+            <section class="glass-panel challenge-container">
+                <div class="challenge-header">
+                    <h3><i class="fa-solid fa-gamepad"></i> PREDICT THE FORCE</h3>
+                    <span class="badge" id="score-badge">Score: 0</span>
+                </div>
+                <div class="challenge-body">
+                    <p id="challenge-prompt">Challenge prompt here...</p>
+                    
+                    <!-- 6-way answer grid -->
+                    <div class="challenge-options-grid">
+                        <button class="btn btn-choice" data-answer="up"><i class="fa-solid fa-arrow-up"></i> UP</button>
+                        <button class="btn btn-choice" data-answer="down"><i class="fa-solid fa-arrow-down"></i> DOWN</button>
+                        <button class="btn btn-choice" data-answer="left"><i class="fa-solid fa-arrow-left"></i> LEFT</button>
+                        <button class="btn btn-choice" data-answer="right"><i class="fa-solid fa-arrow-right"></i> RIGHT</button>
+                        <button class="btn btn-choice" data-answer="inwards"><i class="fa-solid fa-circle-xmark"></i> INTO SCREEN</button>
+                        <button class="btn btn-choice" data-answer="outwards"><i class="fa-solid fa-circle-dot"></i> OUT OF SCREEN</button>
+                    </div>
+                    
+                    <p id="challenge-feedback" class="feedback-text"></p>
+                    <button id="next-challenge" class="btn btn-primary" style="display: none;">Next Challenge <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </section>
+        </aside>
+
+        <!-- Legend / Footer -->
+        <footer class="glass-panel">
+            <div class="legend-item"><span class="legend-color field"></span> Magnetic Field (B)</div>
+            <div class="legend-item"><span class="legend-color current"></span> Conventional Current (I)</div>
+            <div class="legend-item"><span class="legend-color electron"></span> Electron Flow (e⁻)</div>
+            <div class="legend-item"><span class="legend-color force"></span> Force (F) / Movement</div>
+        </footer>
+    </div>
+
+    <!-- Application Javascript -->
+    <script src="app.js"></script>
+</body>
+</html>
